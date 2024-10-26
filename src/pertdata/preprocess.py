@@ -1,6 +1,7 @@
 import argparse
 import os
 
+import pertdata.adamson as adamson
 from pertdata.utils import get_git_root
 
 
@@ -10,12 +11,23 @@ def _preprocess(datasets_dir_path: str, dataset_name: str) -> None:
     Args:
         datasets_dir_path: The path to the datasets directory.
         dataset_name: The name of the dataset.
-        apply_gears_filter: Whether to reduce the data to the same set of cells as used
-            by GEARS.
     """
+    # Abort if the datasets directory already exists. Otherwise, create it.
+    if os.path.exists(datasets_dir_path):
+        raise FileExistsError(
+            f"The datasets directory already exists: {datasets_dir_path}"
+        )
+    os.makedirs(name=datasets_dir_path, exist_ok=False)
+
     # Create the "raw" directory.
     raw_dir_path = os.path.join(datasets_dir_path, dataset_name, "raw")
     os.makedirs(name=raw_dir_path, exist_ok=True)
+
+    # Download the raw data.
+    if dataset_name == "adamson":
+        adamson.download_raw_data(dir_path=raw_dir_path)
+    else:
+        raise ValueError(f"Unsupported dataset: {dataset_name}")
 
 
 def _print_banner(message: str) -> None:
