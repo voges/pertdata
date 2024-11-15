@@ -2,7 +2,9 @@ import argparse
 import os
 
 import pertdata.adamson as adamson
-from pertdata.utils import get_git_root
+import pertdata.norman as norman
+from pertdata.extract_gears_obs import extract_gears_obs
+from pertdata.shared import filter_barcodes_and_add_condition
 
 
 def _preprocess(datasets_dir_path: str, dataset_name: str) -> None:
@@ -26,8 +28,45 @@ def _preprocess(datasets_dir_path: str, dataset_name: str) -> None:
     # Download the raw data.
     if dataset_name == "adamson":
         adamson.download_raw_data(dir_path=raw_dir_path)
+    elif dataset_name == "norman":
+        norman.download_raw_data(dir_path=raw_dir_path)
     else:
         raise ValueError(f"Unsupported dataset: {dataset_name}")
+
+    # Load the data into an AnnData object.
+    print(f"Loading raw data from: {raw_dir_path}")
+    if dataset_name == "adamson":
+        adata = adamson.load_raw_data(dir_path=raw_dir_path)
+    elif dataset_name == "norman":
+        adata = norman.load_raw_data(dir_path=raw_dir_path)
+    else:
+        raise ValueError(f"Unsupported dataset: {dataset_name}")
+    print(adata)
+
+    apply_gears_filter = True
+    if apply_gears_filter:
+        # Extract the GEARS barcodes.
+        gears_barcodes_file_path = extract_gears_obs(
+            dataset_name=dataset_name, datasets_dir_path=datasets_dir_path
+        )
+
+        # Filter the data to keep only those cells as used by GEARS.
+        print(f"Filtering the raw data based on: {gears_barcodes_file_path}")
+        adata = filter_barcodes_and_add_condition(
+            adata=adata, barcodes_file_path=gears_barcodes_file_path
+        )
+        print(adata)
+
+    # Create the "preprocessed" directory.
+    preprocessed_dir_path = os.path.join(
+        datasets_dir_path, dataset_name, "preprocessed"
+    )
+    os.makedirs(name=preprocessed_dir_path, exist_ok=True)
+
+    # Save the data to an H5AD file.
+    h5ad_file_path = os.path.join(preprocessed_dir_path, "adata.h5ad")
+    print(f"Saving the preprocessed data to: {h5ad_file_path}")
+    adata.write(filename=h5ad_file_path)
 
 
 def _print_banner(message: str) -> None:
@@ -61,7 +100,7 @@ def _parse_command_line_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--datasets_dir_path",
         type=str,
-        default=os.path.join(get_git_root(), "datasets"),
+        required=True,
         help="The path to the datasets directory.",
     )
     parser.add_argument(
