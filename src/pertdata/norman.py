@@ -2,12 +2,8 @@
 
 import os
 import shutil
-import sys
 
 import scanpy as sc
-
-# Add the root of the project to sys.path.
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from pertdata.shared import download_file, modify_features_file
 

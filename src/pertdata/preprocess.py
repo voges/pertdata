@@ -14,12 +14,14 @@ def _preprocess(datasets_dir_path: str, dataset_name: str) -> None:
         datasets_dir_path: The path to the datasets directory.
         dataset_name: The name of the dataset.
     """
-    # Abort if the datasets directory already exists. Otherwise, create it.
-    if os.path.exists(datasets_dir_path):
+    # Abort if the directory for the current dataset already exists. Otherwise, create
+    # it.
+    dataset_dir_path = os.path.join(datasets_dir_path, dataset_name)
+    if os.path.exists(dataset_dir_path):
         raise FileExistsError(
-            f"The datasets directory already exists: {datasets_dir_path}"
+            f"The dataset directory already exists: {dataset_dir_path}"
         )
-    os.makedirs(name=datasets_dir_path, exist_ok=False)
+    os.makedirs(name=dataset_dir_path, exist_ok=False)
 
     # Create the "raw" directory.
     raw_dir_path = os.path.join(datasets_dir_path, dataset_name, "raw")

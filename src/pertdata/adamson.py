@@ -6,7 +6,7 @@ import shutil
 import anndata as ad
 import scanpy as sc
 
-from pertdata.utils import download_and_extract_tar_file
+from pertdata.shared import download_and_extract_tar_file, modify_features_file
 
 
 def download_raw_data(dir_path: str) -> None:
@@ -22,7 +22,15 @@ def download_raw_data(dir_path: str) -> None:
 
     # The raw data of the Adamson dataset needs to be organized quite specifically to
     # be loaded correctly by Scanpy.
-    _organize_raw_data(dir_path=dir_path)
+    _organize_raw_data_adamson(dir_path=dir_path)
+
+    # The "raw_features.tsv.gz" files needs to have a third column with the value
+    # "Gene Expression".
+    for dir_name in os.listdir(path=dir_path):
+        curr_dir_path = os.path.join(dir_path, dir_name)
+        if os.path.isdir(curr_dir_path):
+            raw_features_file_path = os.path.join(curr_dir_path, "raw_features.tsv.gz")
+            modify_features_file(file_path=raw_features_file_path)
 
 
 def load_raw_data(dir_path: str) -> sc.AnnData:
@@ -62,7 +70,7 @@ def load_raw_data(dir_path: str) -> sc.AnnData:
     return adata_combined
 
 
-def _organize_raw_data(dir_path: str) -> None:
+def _organize_raw_data_adamson(dir_path: str) -> None:
     """Organize the raw data for the Adamson dataset.
 
     Organize the raw data so that it can be loaded correctly by Scanpy. We need to
