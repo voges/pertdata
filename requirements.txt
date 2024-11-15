@@ -38,7 +38,6 @@ packaging==24.1
 pandas==2.2.3
 parso==0.8.4
 patsy==0.5.6
--e git+ssh://git@github.com/voges/pertdata.git@198876dceaac1278d7cb347e9f8b3753497cd055#egg=pertdata
 pexpect==4.9.0
 pillow==11.0.0
 platformdirs==4.3.6
