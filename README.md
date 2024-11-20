@@ -2,13 +2,14 @@
 
 Install the `pertdata` package:
 
-```sh
-bash install.sh
+```shell
+pip3 install --requirement requirements.txt
+pip3 install --editable .
 ```
 
 Run the preprocessing:
 
-```sh
+```shell
 pertdata-preprocess --help
 ```
 
