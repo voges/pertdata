@@ -1,11 +1,14 @@
 """Preprocessing for the Norman dataset."""
 
 import os
-import shutil
+import sys
 
 import scanpy as sc
 
-from pertdata.shared import download_file, modify_features_file
+# Add the root of the project to sys.path.
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from preprocess.shared import download_file, modify_features_file
 
 
 def download_raw_data(dir_path: str) -> None:
@@ -31,13 +34,14 @@ def download_raw_data(dir_path: str) -> None:
     for url, filename in zip(urls, filenames):
         download_file(url=url, path=os.path.join(dir_path, filename))
 
+    # TODO: According to the documentation, this is not needed?!
     # We need to rename "raw_genes.tsv.gz" to "raw_features.tsv.gz", because the
     # function sc.read_10x_mtx() expects the file to be named "raw_features.tsv.gz".
     # We make a copy and keep "raw_genes.tsv.gz" to avoid duplicate downloads.
-    shutil.copy2(
-        src=os.path.join(dir_path, "raw_genes.tsv.gz"),
-        dst=os.path.join(dir_path, "raw_features.tsv.gz"),
-    )
+    # shutil.copy2(
+    #     src=os.path.join(dir_path, "raw_genes.tsv.gz"),
+    #     dst=os.path.join(dir_path, "raw_features.tsv.gz"),
+    # )
 
     # Also, the "raw_features.tsv.gz" file needs to have a third column with the value
     # "Gene Expression".

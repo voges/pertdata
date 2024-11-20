@@ -2,11 +2,15 @@
 
 import os
 import shutil
+import sys
 
 import anndata as ad
 import scanpy as sc
 
-from pertdata.shared import download_and_extract_tar_file, modify_features_file
+# Add the root of the project to sys.path.
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from preprocess.shared import download_and_extract_tar_file, modify_features_file
 
 
 def download_raw_data(dir_path: str) -> None:
