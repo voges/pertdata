@@ -1,28 +1,33 @@
-import argparse
+"""Preprocess the datasets."""
+
 import os
+import sys
 
-import pertdata.adamson as adamson
-import pertdata.norman as norman
-from pertdata.extract_gears_obs import extract_gears_obs
-from pertdata.shared import filter_barcodes_and_add_condition
+# Add the root of the project to sys.path.
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+import preprocess.adamson as adamson
+import preprocess.dixit as dixit
+import preprocess.norman as norman
+import preprocess.replogle_rpe1_essential as replogle_rpe1_essential
+from preprocess.extract_gears_obs import extract_gears_obs
+from preprocess.shared import filter_barcodes_and_add_condition
+from utils.filesystem import get_git_root
+
+import external.pertdata.src.pertdata.replogle_k562_essential as replogle_k562_essential
 
 
-def _preprocess(datasets_dir_path: str, dataset_name: str) -> None:
+def _preprocess(
+    datasets_dir_path: str, dataset_name: str, apply_gears_filter: bool = False
+) -> None:
     """Preprocess a dataset.
 
     Args:
         datasets_dir_path: The path to the datasets directory.
         dataset_name: The name of the dataset.
+        apply_gears_filter: Whether to reduce the data to the same set of cells as used
+            by GEARS.
     """
-    # Abort if the directory for the current dataset already exists. Otherwise, create
-    # it.
-    dataset_dir_path = os.path.join(datasets_dir_path, dataset_name)
-    if os.path.exists(dataset_dir_path):
-        raise FileExistsError(
-            f"The dataset directory already exists: {dataset_dir_path}"
-        )
-    os.makedirs(name=dataset_dir_path, exist_ok=False)
-
     # Create the "raw" directory.
     raw_dir_path = os.path.join(datasets_dir_path, dataset_name, "raw")
     os.makedirs(name=raw_dir_path, exist_ok=True)
@@ -30,8 +35,14 @@ def _preprocess(datasets_dir_path: str, dataset_name: str) -> None:
     # Download the raw data.
     if dataset_name == "adamson":
         adamson.download_raw_data(dir_path=raw_dir_path)
+    elif dataset_name == "dixit":
+        dixit.download_raw_data(dir_path=raw_dir_path)
     elif dataset_name == "norman":
         norman.download_raw_data(dir_path=raw_dir_path)
+    elif dataset_name == "replogle_k562_essential":
+        replogle_k562_essential.download_raw_data(dir_path=raw_dir_path)
+    elif dataset_name == "replogle_rpe1_essential":
+        replogle_rpe1_essential.download_raw_data(dir_path=raw_dir_path)
     else:
         raise ValueError(f"Unsupported dataset: {dataset_name}")
 
@@ -39,13 +50,18 @@ def _preprocess(datasets_dir_path: str, dataset_name: str) -> None:
     print(f"Loading raw data from: {raw_dir_path}")
     if dataset_name == "adamson":
         adata = adamson.load_raw_data(dir_path=raw_dir_path)
+    elif dataset_name == "dixit":
+        adata = dixit.load_raw_data(dir_path=raw_dir_path)
     elif dataset_name == "norman":
         adata = norman.load_raw_data(dir_path=raw_dir_path)
+    elif dataset_name == "replogle_k562_essential":
+        adata = replogle_k562_essential.load_raw_data(dir_path=raw_dir_path)
+    elif dataset_name == "replogle_rpe1_essential":
+        adata = replogle_rpe1_essential.load_raw_data(dir_path=raw_dir_path)
     else:
         raise ValueError(f"Unsupported dataset: {dataset_name}")
     print(adata)
 
-    apply_gears_filter = True
     if apply_gears_filter:
         # Extract the GEARS barcodes.
         gears_barcodes_file_path = extract_gears_obs(
@@ -119,10 +135,11 @@ def _parse_command_line_arguments() -> argparse.Namespace:
 def main() -> None:
     """Preprocess the raw data."""
     args = _parse_command_line_arguments()
-    _print_banner(f"Preprocessing dataset: {args.dataset_name}")
+    _print_banner(f"Preprocessing dataset: {dataset_name}")
     _preprocess(
-        datasets_dir_path=args.datasets_dir_path,
-        dataset_name=args.dataset_name,
+        datasets_dir_path=os.path.join(get_git_root(), "datasets"),
+        dataset_name=dataset_name,
+        apply_gears_filter=True,
     )
 
 
