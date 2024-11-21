@@ -16,9 +16,6 @@ license = {file = "LICENSE"}
 [project.urls]
 Repository = "https://github.com/voges/pertdata.git"
 
-[project.scripts]
-pertdata-preprocess = "pertdata.preprocess:main"
-
 [tool.ruff.lint]
 extend-select = [
     # pycodestyle

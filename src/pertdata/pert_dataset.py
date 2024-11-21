@@ -1,14 +1,13 @@
-"""Functionality for handling perturbation datasets."""
+"""The PertDataset class for handling perturbation datasets."""
 
-import gzip
 import os
-import shutil
 from typing import Optional
 
-import gdown
 import pandas as pd
 import scanpy as sc
 from anndata import AnnData
+
+import pertdata.preprocess as preprocess
 
 
 class PertDataset:
@@ -57,7 +56,7 @@ class PertDataset:
         self.adata = _load(
             dataset_name=name,
             dataset_variant=variant,
-            dataset_dir_path=self.path,
+            datasets_dir_path=dir_path,
         )
 
     def __str__(self) -> str:
@@ -70,17 +69,6 @@ class PertDataset:
             f"    adata: AnnData object with n_obs ✕ n_vars "
             f"= {self.adata.shape[0]} ✕ {self.adata.shape[1]}"
         )
-
-    def normalize_(self, type: str = "CPM") -> None:
-        """Normalize the gene expression matrix.
-
-        Args:
-            type: The type of normalization to apply (supported: "CPM").
-        """
-        if type == "CPM":
-            _normalize_cpm_(adata=self.adata)
-        else:
-            raise ValueError(f"Unsupported normalization type: {type}")
 
     def export_tsv(self, file_path: str, n_samples: int = None) -> None:
         """Save the perturbation data to a TSV file.
@@ -132,13 +120,13 @@ class PertDataset:
         expression_df.to_csv(path_or_buf=file_path, sep="\t", index=False)
 
 
-def _load(dataset_name: str, dataset_variant: str, dataset_dir_path: str) -> AnnData:
+def _load(dataset_name: str, dataset_variant: str, datasets_dir_path: str) -> AnnData:
     """Load perturbation dataset.
 
     Args:
         dataset_name: The name of the dataset.
         dataset_variant: The variant of the dataset.
-        dataset_dir_path: The directory path where the dataset is stored.
+        datasets_dir_path: The datasets directory path.
 
     Returns:
         The perturbation dataset as an AnnData object.
@@ -146,80 +134,23 @@ def _load(dataset_name: str, dataset_variant: str, dataset_dir_path: str) -> Ann
     Raises:
         ValueError: If the dataset name or dataset variant is unsupported.
     """
-    if dataset_name == "adamson":
-        if dataset_variant == "gears":
-            url = "https://drive.google.com/uc?id=1W1phErDoQ9U5iJZSEuyEZM4dF8U8ZWqf"
-        elif dataset_variant == "preprocessed":
-            url = "https://drive.google.com/uc?id=150AH0uEJYDERCHnnM2P9knZpmY4tOGNZ"
-        else:
-            raise ValueError(f"Unsupported dataset variant: {dataset_variant}")
-    elif dataset_name == "dixit":
-        if dataset_variant == "gears":
-            url = "https://drive.google.com/uc?id=1BN6gwKFgJIpR9fXfdQ9QeHm8mAzvmhKQ"
-        elif dataset_variant == "preprocessed":
-            url = "https://drive.google.com/uc?id=1qVQD9zU_Dpj5AUJaD3tM8BpfTkKqgvog"
-        else:
-            raise ValueError(f"Unsupported dataset variant: {dataset_variant}")
-    elif dataset_name == "norman":
-        if dataset_variant == "gears":
-            url = "https://drive.google.com/uc?id=1T5_varFOGWUtSig4RQRCSsfPxivUwd9j"
-        elif dataset_variant == "preprocessed":
-            url = "https://drive.google.com/uc?id=1KgatnkMHy-3uh5tNkAFrsmGrivDOUjpx"
-        else:
-            raise ValueError(f"Unsupported dataset variant: {dataset_variant}")
-    elif dataset_name == "replogle_k562_essential":
-        if dataset_variant == "gears":
-            url = "https://drive.google.com/uc?id=12flxmpj-XnJ8BZKtf-sgBhdUN2X4v7CD"
-        elif dataset_variant == "preprocessed":
-            url = "https://drive.google.com/uc?id=1zdznT5x92pd8-o9HOtudKkwvj4CgqnNO"
-        else:
-            raise ValueError(f"Unsupported dataset variant: {dataset_variant}")
-    elif dataset_name == "replogle_rpe1_essential":
-        if dataset_variant == "gears":
-            url = "https://drive.google.com/uc?id=1b-ZwE_Y6dNKqb4KQgUgFKfl6OGC8lmYE"
-        elif dataset_variant == "preprocessed":
-            url = "https://drive.google.com/uc?id=1KhmS61iYwE0ineaiQyqX3chjJmCfmtFE"
+    dir_path = os.path.join(datasets_dir_path, dataset_name, dataset_variant)
+
+    if dataset_name == "replogle_2020_exp7":
+        if dataset_variant == "preprocessed":
+            if not os.path.exists(path=dir_path):
+                preprocess.preprocess(
+                    datasets_dir_path=datasets_dir_path,
+                    dataset_name=dataset_name,
+                )
         else:
             raise ValueError(f"Unsupported dataset variant: {dataset_variant}")
     else:
         raise ValueError(f"Unsupported dataset name: {dataset_name}")
 
-    # Make the directory for the selected dataset.
-    os.makedirs(name=dataset_dir_path, exist_ok=True)
-
-    # Make the file path for the selected dataset.
-    h5ad_file_path = os.path.join(dataset_dir_path, "adata.h5ad")
-
-    # Download and extract the dataset if it does not exist.
-    if not os.path.exists(path=h5ad_file_path):
-        # Make the file path for the compressed dataset.
-        zip_file_path = os.path.join(dataset_dir_path, "adata.h5ad.gz")
-
-        # Download the dataset.
-        print(f"Downloading: {url} -> {zip_file_path}")
-        gdown.download(url=url, output=zip_file_path)
-
-        # Extract the dataset.
-        print(f"Extracting: {zip_file_path} -> {h5ad_file_path}")
-        with gzip.open(filename=zip_file_path, mode="rb") as f_in:
-            with open(file=h5ad_file_path, mode="wb") as f_out:
-                shutil.copyfileobj(fsrc=f_in, fdst=f_out)
-
-        # Remove the compressed file.
-        print(f"Removing: {zip_file_path}")
-        os.remove(path=zip_file_path)
-
     # Load the dataset.
+    h5ad_file_path = os.path.join(dir_path, "adata.h5ad")
     print(f"Loading: {h5ad_file_path}")
     adata = sc.read_h5ad(filename=h5ad_file_path)
 
     return adata
-
-
-def _normalize_cpm_(adata: AnnData) -> None:
-    """Normalize the data (target_sum=1e6 is CPM normalization).
-
-    Args:
-        adata: The AnnData object to normalize.
-    """
-    sc.pp.normalize_total(adata=adata, target_sum=1e6, inplace=True)
