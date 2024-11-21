@@ -1,12 +1,125 @@
 """Utility to extract ['cell_id', 'condition'] from the GEARS datasets."""
 
+import os
+import sys
+
+import pandas as pd
+
+# Add the root of the project to sys.path.
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+import transmet.pert_dataset as pt
+
+
+def _fix_adamson(csv_file_path: str) -> None:
+    """Fix the CSV file for the Adamson dataset.
+
+    Args:
+        csv_file_path: The path to the CSV file.
+    """
+    # Read the CSV file into a DataFrame.
+    df = pd.read_csv(filepath_or_buffer=csv_file_path)
+
+    # Remove the "(?)" suffix from all rows.
+    df = df.replace(to_replace=r"\(\?\)", value="", regex=True)
+
+    # Save the modified DataFrame back to the same CSV file.
+    df.to_csv(path_or_buf=csv_file_path, index=False)
+
+
+def extract_gears_obs(dataset_name: str, datasets_dir_path: str) -> str:
+    """Extract ['cell_id', 'condition'] from the GEARS datasets.
+
+    Args:
+        dataset_name: The name of the dataset.
+        datasets_dir_path: The path to the datasets directory.
+
+    Returns:
+        The path to the CSV file containing the observations.
+    """
+    # Make the output file path.
+    output_file_path = os.path.join(datasets_dir_path, dataset_name, "gears", "obs.csv")
+
+    if not os.path.exists(output_file_path):
+        # Load the dataset.
+        pert_dataset = pt.PertDataset(
+            name=dataset_name, variant="gears", dir_path=datasets_dir_path
+        )
+
+        # Export the observations.
+        print(f"Exporting observations to: {output_file_path}")
+        pert_dataset.export_obs_to_csv(
+            file_path=output_file_path, obs=["cell_id", "condition"]
+        )
+
+        # Apply fixes.
+        if dataset_name == "adamson":
+            _fix_adamson(csv_file_path=output_file_path)
+
+    return output_file_path
+
+
+def filter_barcodes_and_add_condition(
+    adata: ad.AnnData, barcodes_file_path: str
+) -> ad.AnnData:
+    """Filter the AnnData object to keep only those cells in the barcodes file.
+
+    Filter the AnnData object to keep only cells present in the barcodes file. Also
+    add the "condition" info for every cell from the barcodes file to the AnnData
+    object.
+
+    The barcodes file should have the following format:
+    ```
+    cell_id,condition
+    AAACATACACCGAT,CREB1
+    AAACATACAGAGAT,ctrl
+    ...
+    ```
+
+    Args:
+        adata: The AnnData object to filter.
+        barcodes_file_path: The path to the barcodes file.
+
+    Returns:
+        The filtered AnnData object.
+    """
+    # Load the barcodes file.
+    barcodes_df = pd.read_csv(filepath_or_buffer=barcodes_file_path, sep=",")
+
+    # Get the barcodes to keep.
+    barcodes_to_keep = barcodes_df["cell_id"].values
+
+    # Filter the AnnData object.
+    adata_filtered = adata[adata.obs_names.isin(values=barcodes_to_keep)].copy()
+
+    # Add the "condition" info.
+    barcode_dict = dict(zip(barcodes_df["cell_id"], barcodes_df["condition"]))
+    adata_filtered.obs["condition"] = adata_filtered.obs_names.map(barcode_dict)
+
+    return adata_filtered
+
+
+def apply_gears_filter():
+    # Extract the GEARS barcodes.
+    gears_barcodes_file_path = extract_gears_obs(
+        dataset_name=dataset_name, datasets_dir_path=datasets_dir_path
+    )
+
+    # Filter the data to keep only those cells as used by GEARS.
+    print(f"Filtering the raw data based on: {gears_barcodes_file_path}")
+    adata = filter_barcodes_and_add_condition(
+        adata=adata, barcodes_file_path=gears_barcodes_file_path
+    )
+
+
+"""Utility to extract ['cell_id', 'condition'] from the GEARS datasets."""
+
 import gzip
 import os
 import shutil
 from typing import List
 
 import gdown
-import pandas as pd
 import scanpy as sc
 from anndata import AnnData
 
