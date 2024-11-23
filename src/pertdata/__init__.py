@@ -1,4 +1,4 @@
-"""Expose the public API for the pertdata package."""
+"""Public API for the pertdata package."""
 
 from .pert_dataset import PertDataset
 

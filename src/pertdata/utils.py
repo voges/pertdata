@@ -1,4 +1,4 @@
-"""Functionality that is shared between different datasets."""
+"""Utilities."""
 
 import os
 
@@ -6,7 +6,7 @@ import requests
 from tqdm import tqdm
 
 
-def download_file(url: str, path: str, skip_if_exists=True) -> None:
+def download_file(url: str, path: str, skip_if_exists: bool = False) -> None:
     """Download a file with a progress bar.
 
     The progress bar will display the size in binary units (e.g., KiB for kibibytes,
@@ -23,6 +23,7 @@ def download_file(url: str, path: str, skip_if_exists=True) -> None:
         OSError: If there is an issue with writing the file.
     """
     if skip_if_exists and os.path.exists(path=path):
+        print(f"Skipping download because file already exists: {path}")
         return
 
     print(f"Downloading: {url} -> {path}")
@@ -35,16 +36,16 @@ def download_file(url: str, path: str, skip_if_exists=True) -> None:
             )
             print(f"Total size: {total_size_in_bytes:,} bytes")
             block_size = 1024
-            progress_bar = tqdm(total=total_size_in_bytes, unit="iB", unit_scale=True)
-            with open(file=path, mode="wb") as file:
-                for data in response.iter_content(chunk_size=block_size):
-                    progress_bar.update(n=len(data))
-                    file.write(data)
-            progress_bar.close()
+            with tqdm(
+                total=total_size_in_bytes, unit="iB", unit_scale=True
+            ) as progress_bar:
+                with open(file=path, mode="wb") as file:
+                    for data in response.iter_content(chunk_size=block_size):
+                        progress_bar.update(n=len(data))
+                        file.write(data)
     except requests.exceptions.RequestException as e:
         print(f"Error downloading file: {e}")
+        raise
     except OSError as e:
         print(f"Error writing file: {e}")
-    finally:
-        if progress_bar is not None and "progress_bar" in locals():
-            progress_bar.close()
+        raise
