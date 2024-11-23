@@ -113,7 +113,7 @@ class PertDataset:
                     )
                 else:
                     print(f"Dataset already cached: {dataset_path}")
-            elif repository == "scPerturb":
+            elif repository == "SENA" or "scPerturb":
                 if not os.path.exists(dataset_path):
                     os.makedirs(dataset_path, exist_ok=True)
                     download_file(url=url, path=h5ad_file_path)
