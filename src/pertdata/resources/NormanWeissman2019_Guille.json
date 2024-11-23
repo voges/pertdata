@@ -1,8 +1,8 @@
 {
-  "name": "ReplogleNorman2020_E7",
+  "name": "NormanWeissman2019_Guille",
   "info": "This dataset must be manually preprocessed and placed in the cache directory.",
   "publication": {
-    "doi": "10.1038/s41587-020-0470-y"
+    "doi": "10.1126/science.aax4438"
   },
   "repository": "Local",
   "url": ""

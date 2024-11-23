@@ -9,7 +9,7 @@ import requests
 from tqdm import tqdm
 
 
-def download_file(url: str, path: str, skip_if_exists: bool = False) -> None:
+def download_file(url: str, path: str, skip_if_exists: bool = True) -> None:
     """Download a file with a progress bar.
 
     The progress bar will display the size in binary units (e.g., KiB for kibibytes,
@@ -69,3 +69,8 @@ def datasets() -> Dict[str, dict]:
             name_without_extension = os.path.splitext(resource)[0]
             datasets[name_without_extension] = metadata
     return datasets
+
+
+def cache_dir_path() -> str:
+    """Return the path to the cache directory."""
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "cache"))

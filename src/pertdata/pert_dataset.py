@@ -10,7 +10,7 @@ import pandas as pd
 import scanpy as sc
 from anndata import AnnData
 
-from pertdata.utils import datasets, download_file
+from pertdata.utils import cache_dir_path, datasets, download_file
 
 
 class PertDataset:
@@ -50,7 +50,7 @@ class PertDataset:
 
         # Set the attributes.
         self.name = name
-        self.path = os.path.join(_get_cache_dir_path(), name)
+        self.path = os.path.join(cache_dir_path(), name)
         self.adata = self._load()
 
     def __str__(self) -> str:
@@ -71,7 +71,7 @@ class PertDataset:
         """
         # Check if the dataset is supported.
         available_datasets = datasets()
-        if f"{self.name}.json" not in available_datasets:
+        if f"{self.name}" not in available_datasets.keys():
             print("Available datasets:")
             for key in available_datasets.keys():
                 print(f"  {key}")
@@ -82,33 +82,45 @@ class PertDataset:
             package="pertdata.resources", resource=f"{self.name}.json"
         ) as json_file:
             metadata = json.load(json_file)
+            name = metadata.get("name")
             repository = metadata.get("repository")
             url = metadata.get("url")
 
-            # Check if the dataset is already cached. Otherwise, download it.
-            dataset_path = os.path.join(_get_cache_dir_path(), self.name)
+            dataset_path = os.path.join(cache_dir_path(), name)
             h5ad_file_path = os.path.join(dataset_path, "adata.h5ad")
-            if not os.path.exists(dataset_path):
-                os.makedirs(dataset_path, exist_ok=True)
-                download_file(url=url, path=h5ad_file_path)
 
-                # If repository==GEARS, we have to unzip the file.
-                if repository == "GEARS":
-                    # Rename adata.h5ad to adata.zip.
-                    zip_file_path = os.path.join(dataset_path, "adata.zip")
-                    os.rename(src=h5ad_file_path, dst=zip_file_path)
-                    # Unzip the file.
-                    print(f"Unzipping: {zip_file_path}")
-                    with zipfile.ZipFile(zip_file_path, "r") as zip:
-                        zip.extractall(path=dataset_path)
-            else:
-                print(f"Dataset already cached: {dataset_path}")
-
-            # Adjust the path to the unzipped file.
             if repository == "GEARS":
                 h5ad_file_path = os.path.join(
-                    dataset_path, "norman", "perturb_processed.h5ad"
+                    dataset_path, name, "perturb_processed.h5ad"
                 )
+
+                if not os.path.exists(dataset_path):
+                    os.makedirs(dataset_path, exist_ok=True)
+
+                    # Download and extract the data.
+                    zip_file_path = os.path.join(dataset_path, "data.zip")
+                    download_file(url=url, path=zip_file_path)
+                    with zipfile.ZipFile(file=zip_file_path, mode="r") as zip:
+                        zip.extractall(path=dataset_path)
+                else:
+                    print(f"Dataset already cached: {dataset_path}")
+            elif repository == "Local":
+                if not os.path.exists(dataset_path):
+                    raise ValueError(
+                        "This dataset must be manually preprocessed and placed in the "
+                        "cache directory. To do this, please execute "
+                        f"'notebooks/preprocess/{name}.ipynb'."
+                    )
+                else:
+                    print(f"Dataset already cached: {dataset_path}")
+            elif repository == "scPerturb":
+                if not os.path.exists(dataset_path):
+                    os.makedirs(dataset_path, exist_ok=True)
+                    download_file(url=url, path=h5ad_file_path)
+                else:
+                    print(f"Dataset already cached: {dataset_path}")
+            else:
+                raise ValueError(f"Unsupported repository: {repository}")
 
             # Load the dataset.
             print(f"Loading: {h5ad_file_path}")
@@ -164,7 +176,3 @@ class PertDataset:
 
         # Save the DataFrame to a TSV file.
         expression_df.to_csv(path_or_buf=file_path, sep="\t", index=False)
-
-
-def _get_cache_dir_path() -> str:
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "cache"))
