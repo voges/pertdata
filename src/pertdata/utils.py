@@ -1,6 +1,9 @@
 """Utilities."""
 
+import importlib.resources as pkg_resources
+import json
 import os
+from typing import Dict
 
 import requests
 from tqdm import tqdm
@@ -49,3 +52,20 @@ def download_file(url: str, path: str, skip_if_exists: bool = False) -> None:
     except OSError as e:
         print(f"Error writing file: {e}")
         raise
+
+
+def datasets() -> Dict[str, dict]:
+    """Return a dictionary of available datasets.
+
+    The keys are the names of the datasets, and the values contain the metadata.
+    """
+    resources_dir = pkg_resources.contents(package="pertdata.resources")
+    datasets = {}
+    for resource in resources_dir:
+        with pkg_resources.open_text(
+            package="pertdata.resources", resource=resource
+        ) as json_file:
+            metadata = json.load(json_file)
+            name_without_extension = os.path.splitext(resource)[0]
+            datasets[name_without_extension] = metadata
+    return datasets

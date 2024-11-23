@@ -1,18 +1,9 @@
 {
   "name": "DixitRegev2016",
+  "info": "",
   "publication": {
     "doi": "10.1016/j.cell.2016.11.038"
   },
-  "data": [
-    {
-      "repository": "scPerturb",
-      "accession": "DixitRegev2016",
-      "url": "https://zenodo.org/record/7041849/files/DixitRegev2016.h5ad"
-    },
-    {
-      "repository": "GEARS",
-      "accession": "dixit",
-      "url": "https://dataverse.harvard.edu/api/access/datafile/6154416"
-    }
-  ]
+  "repository": "scPerturb",
+  "url": "https://zenodo.org/record/7041849/files/DixitRegev2016.h5ad"
 }

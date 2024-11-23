@@ -1,0 +1,9 @@
+{
+  "name": "wessel_dataset",
+  "info": "",
+  "publication": {
+    "doi": "10.1038/s41592-022-01705-x"
+  },
+  "repository": "SENA",
+  "url": "https://raw.githubusercontent.com/ML4BM-Lab/SENA/40d6923c77e2ad80529e4a85e541a2c0f0b43b38/data/wessel_dataset/HEK293FT_carpool_processed.h5ad"
+}

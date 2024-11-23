@@ -10,7 +10,7 @@ import pandas as pd
 import scanpy as sc
 from anndata import AnnData
 
-from pertdata.utils import download_file
+from pertdata.utils import datasets, download_file
 
 
 class PertDataset:
@@ -30,31 +30,27 @@ class PertDataset:
 
     Attributes:
         name: The name of the dataset.
-        repository: The repository of the dataset.
         path: The path where the dataset is stored.
         adata: The actual perturbation data.
     """
 
-    def __init__(self, name: str, repository: str) -> "PertDataset":
+    def __init__(self, name: str) -> "PertDataset":
         """Initialize the PertDataset object.
 
         Args:
             name: The name of the dataset.
-            repository: The repository of the dataset.
 
         Returns:
             A PertDataset object.
         """
         # Initialize the attributes.
         self.name: Optional[str] = None
-        self.repository: Optional[str] = None
         self.path: Optional[str] = None
         self.adata: Optional[AnnData] = None
 
         # Set the attributes.
         self.name = name
-        self.repository = repository
-        self.path = os.path.join(_get_cache_dir_path(), name, repository)
+        self.path = os.path.join(_get_cache_dir_path(), name)
         self.adata = self._load()
 
     def __str__(self) -> str:
@@ -62,7 +58,6 @@ class PertDataset:
         return (
             f"PertDataset object\n"
             f"    name: {self.name}\n"
-            f"    repository: {self.repository}\n"
             f"    path: {self.path}\n"
             f"    adata: AnnData object with n_obs ✕ n_vars "
             f"= {self.adata.shape[0]} ✕ {self.adata.shape[1]}"
@@ -75,50 +70,30 @@ class PertDataset:
             The perturbation dataset as an AnnData object.
         """
         # Check if the dataset is supported.
-        resources_dir = pkg_resources.contents(package="pertdata.resources")
-        if f"{self.name}.json" not in resources_dir:
+        available_datasets = datasets()
+        if f"{self.name}.json" not in available_datasets:
             print("Available datasets:")
-            for resource in resources_dir:
-                name_without_extension = os.path.splitext(resource)[0]
-                print(f"  {name_without_extension}")
+            for key in available_datasets.keys():
+                print(f"  {key}")
             raise ValueError(f"Unsupported dataset: {self.name}")
 
         # Load dataset info.
         with pkg_resources.open_text(
             package="pertdata.resources", resource=f"{self.name}.json"
         ) as json_file:
-            info = json.load(json_file)
-
-            # Check if the repository is supported.
-            repository_supported = False
-            for entry in info.get("data", []):
-                if entry.get("repository") == self.repository:
-                    repository_supported = True
-                    break
-            if not repository_supported:
-                print("Available repositories:")
-                for entry in info.get("data", []):
-                    print(f"  {entry.get('repository')}")
-                raise ValueError(f"Unsupported repository: {self.repository}")
-
-            # Find the URL for the specified repository.
-            url = None
-            for entry in info.get("data", []):
-                if entry.get("repository") == self.repository:
-                    url = entry.get("url")
-                    break
+            metadata = json.load(json_file)
+            repository = metadata.get("repository")
+            url = metadata.get("url")
 
             # Check if the dataset is already cached. Otherwise, download it.
-            dataset_path = os.path.join(
-                _get_cache_dir_path(), self.name, self.repository
-            )
+            dataset_path = os.path.join(_get_cache_dir_path(), self.name)
             h5ad_file_path = os.path.join(dataset_path, "adata.h5ad")
             if not os.path.exists(dataset_path):
                 os.makedirs(dataset_path, exist_ok=True)
                 download_file(url=url, path=h5ad_file_path)
 
                 # If repository==GEARS, we have to unzip the file.
-                if self.repository == "GEARS":
+                if repository == "GEARS":
                     # Rename adata.h5ad to adata.zip.
                     zip_file_path = os.path.join(dataset_path, "adata.zip")
                     os.rename(src=h5ad_file_path, dst=zip_file_path)
@@ -130,7 +105,7 @@ class PertDataset:
                 print(f"Dataset already cached: {dataset_path}")
 
             # Adjust the path to the unzipped file.
-            if self.repository == "GEARS":
+            if repository == "GEARS":
                 h5ad_file_path = os.path.join(
                     dataset_path, "norman", "perturb_processed.h5ad"
                 )

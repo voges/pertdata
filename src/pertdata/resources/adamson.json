@@ -1,0 +1,9 @@
+{
+  "name": "adamson",
+  "info": "This dataset contains the concatenated data from the three experiments 'GSM2406675_10X001', 'GSM2406677_10X005', and 'GSM2406681_10X010'.",
+  "publication": {
+    "doi": "10.1016/j.cell.2016.11.048"
+  },
+  "repository": "GEARS",
+  "url": "https://dataverse.harvard.edu/api/access/datafile/6154417"
+}
