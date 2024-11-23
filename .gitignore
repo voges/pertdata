@@ -1,4 +1,2 @@
 __pycache__/
 *.egg-info/
-/.venv/
-/datasets/
