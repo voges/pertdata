@@ -7,4 +7,4 @@ pip3 install --requirement requirements.txt
 pip3 install --editable .
 ```
 
-Please see our [tutorial](notebooks/tutorial.ipynb).
+For usage instructions, please see our [tutorial](notebooks/tutorial.ipynb).
