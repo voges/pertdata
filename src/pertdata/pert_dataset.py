@@ -70,15 +70,17 @@ class PertDataset:
                 print(f"  {key}")
             raise ValueError(f"Unsupported dataset: {self.name}")
 
-        # Load dataset info.
+        # Load the dataset.
         with pkg_resources.open_text(
             package="pertdata.resources", resource=f"{self.name}.json"
         ) as json_file:
+            # Get the metadata.
             metadata = json.load(json_file)
             name = metadata.get("name")
             repository = metadata.get("repository")
             url = metadata.get("url")
 
+            # Set dataset path and H5AD file path from metadata.
             dataset_path = os.path.join(cache_dir_path(), name)
             h5ad_file_path = os.path.join(dataset_path, "adata.h5ad")
 
