@@ -5,9 +5,16 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "pertdata"
 version = "0.1.0"
+dependencies = [
+    "appdirs",
+    "numpy==2.0.0",
+    "pandas",
+    "requests",
+    "scanpy",
+]
 authors = [
-  {name = "Jan Voges"},
-  {name = "Guillermo Dufort y Álvarez"},
+    {name = "Jan Voges"},
+    {name = "Guillermo Dufort y Álvarez"},
 ]
 description = "Functionality for Handling Perturbation Datasets"
 readme = "README.md"
