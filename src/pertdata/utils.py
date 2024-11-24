@@ -6,6 +6,7 @@ import os
 from typing import Dict
 
 import requests
+from appdirs import user_cache_dir
 from tqdm import tqdm
 
 
@@ -73,4 +74,4 @@ def datasets() -> Dict[str, dict]:
 
 def cache_dir_path() -> str:
     """Return the path to the cache directory."""
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "cache"))
+    return user_cache_dir(appname="pertdata", appauthor=False)
