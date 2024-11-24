@@ -84,38 +84,30 @@ class PertDataset:
             dataset_path = os.path.join(cache_dir_path(), name)
             h5ad_file_path = os.path.join(dataset_path, "adata.h5ad")
 
-            if repository == "GEARS":
-                h5ad_file_path = os.path.join(
-                    dataset_path, name, "perturb_processed.h5ad"
-                )
-
-                if not os.path.exists(dataset_path):
-                    os.makedirs(dataset_path, exist_ok=True)
-
-                    # Download and extract the data.
+            # Download the dataset if it is not already cached.
+            if not os.path.exists(path=dataset_path):
+                if repository == "GEARS":
+                    h5ad_file_path = os.path.join(
+                        dataset_path, name, "perturb_processed.h5ad"
+                    )
+                    os.makedirs(name=dataset_path, exist_ok=True)
                     zip_file_path = os.path.join(dataset_path, "data.zip")
                     download_file(url=url, path=zip_file_path)
                     with zipfile.ZipFile(file=zip_file_path, mode="r") as zip:
                         zip.extractall(path=dataset_path)
-                else:
-                    print(f"Dataset already cached: {dataset_path}")
-            elif repository == "Local":
-                if not os.path.exists(dataset_path):
+                elif repository == "Local":
                     raise ValueError(
                         "This dataset must be manually preprocessed and placed in the "
                         "cache directory. To do this, please execute "
                         f"'notebooks/preprocess/{name}.ipynb'."
                     )
-                else:
-                    print(f"Dataset already cached: {dataset_path}")
-            elif repository == "SENA" or "scPerturb":
-                if not os.path.exists(dataset_path):
-                    os.makedirs(dataset_path, exist_ok=True)
+                elif repository == "SENA" or "scPerturb":
+                    os.makedirs(name=dataset_path, exist_ok=True)
                     download_file(url=url, path=h5ad_file_path)
                 else:
-                    print(f"Dataset already cached: {dataset_path}")
+                    raise ValueError(f"Unsupported repository: {repository}")
             else:
-                raise ValueError(f"Unsupported repository: {repository}")
+                print(f"Dataset already cached: {dataset_path}")
 
             # Load the dataset.
             print(f"Loading: {h5ad_file_path}")
