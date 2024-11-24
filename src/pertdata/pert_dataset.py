@@ -4,7 +4,6 @@ import importlib.resources as pkg_resources
 import json
 import os
 import zipfile
-from typing import Optional
 
 import pandas as pd
 import scanpy as sc
@@ -43,12 +42,6 @@ class PertDataset:
         Returns:
             A PertDataset object.
         """
-        # Initialize the attributes.
-        self.name: Optional[str] = None
-        self.path: Optional[str] = None
-        self.adata: Optional[AnnData] = None
-
-        # Set the attributes.
         self.name = name
         self.path = os.path.join(cache_dir_path(), name)
         self.adata = self._load()
