@@ -16,6 +16,9 @@ license = {file = "LICENSE"}
 [project.urls]
 Repository = "https://github.com/voges/pertdata.git"
 
+[tool.setuptools.package-data]
+"pertdata.resources" = ["*.json"]
+
 [tool.ruff.lint]
 extend-select = [
     # pycodestyle
