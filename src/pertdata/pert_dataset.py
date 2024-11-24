@@ -95,12 +95,6 @@ class PertDataset:
                     download_file(url=url, path=zip_file_path)
                     with zipfile.ZipFile(file=zip_file_path, mode="r") as zip:
                         zip.extractall(path=dataset_path)
-                elif repository == "Local":
-                    raise ValueError(
-                        "This dataset must be manually preprocessed and placed in the "
-                        "cache directory. To do this, please execute "
-                        f"'notebooks/preprocess/{name}.ipynb'."
-                    )
                 elif repository == "SENA" or "scPerturb":
                     os.makedirs(name=dataset_path, exist_ok=True)
                     download_file(url=url, path=h5ad_file_path)
