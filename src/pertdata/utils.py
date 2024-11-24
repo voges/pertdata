@@ -57,7 +57,7 @@ def download_file(url: str, path: str, skip_if_exists: bool = True) -> None:
 def datasets() -> Dict[str, dict]:
     """Return a dictionary of available datasets.
 
-    The keys are the names of the datasets, and the values contain the metadata.
+    The keys are the names of the datasets, and the values contain the JSON metadata.
     """
     resources_dir = pkg_resources.contents(package="pertdata.resources")
     datasets = {}
