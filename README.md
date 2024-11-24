@@ -27,4 +27,4 @@ See the [LICENSE](LICENSE) file for details.
 
 For support or questions, please contact:
 - [jvoges@external.unav.es](mailto:jvoges@external.unav.es)
-- [gdufortyalv@unav.es](gdufortyalv@unav.es)
+- [gdufortyalv@unav.es](mailto:gdufortyalv@unav.es)
