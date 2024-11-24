@@ -6,7 +6,7 @@ To install the `pertdata` package, follow these steps:
 
 1. Install the required dependencies:
     ```shell
-    pip3 install --requirement requirements.txt
+    pip3 install --requirement requirements_minimal.txt
     ```
 
 2. Install the `pertdata` package in editable mode:
