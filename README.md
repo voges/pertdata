@@ -4,14 +4,11 @@
 
 To install the `pertdata` package, follow these steps:
 
-1. Install the required dependencies:
-    ```shell
-    pip3 install --requirement requirements_minimal.txt
-    ```
+1. Create a [virtual environment](https://packaging.python.org/en/latest/tutorials/installing-packages/#creating-and-using-virtual-environments).
 
-2. Install the `pertdata` package in editable mode:
+2. Install the `pertdata` package:
     ```shell
-    pip3 install --editable .
+    pip3 install pertdata
     ```
 
 ## Usage
