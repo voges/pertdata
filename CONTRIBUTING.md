@@ -18,25 +18,35 @@ To install the `pertdata` package for development, follow these steps:
 
 ## Distribution
 
-To build the package, execute the following command:
-```python
-python3 -m build
-```
+1. Update the version in [pyproject.toml](pyproject.toml).
+    Use [Semantic Versioning](https://semver.org).
+    Given a version number MAJOR.MINOR.PATCH, increment the:
+    - MAJOR version when you make incompatible API changes,
+    - MINOR version when you add functionality in a backward compatible manner,
+    - PATCH version when you make backward compatible bug fixes.
 
-To upload the package to TestPyPI or PyPI, execute one of the following commands:
-```python
-# TestPyPI
-python3 -m twine upload --repository testpypi dist/*
+2. Make a tagged commit:
+    ```shell
+    git commit --message "Your commit message"
+    git tag --annotate vMAJOR.MINOR.PATCH --message "vMAJOR.MINOR.PATCH"
+    git push origin main --tags
+    ```
 
-# PyPI
-python3 -m twine upload dist/*
-```
+3. Clean previous builds:
+    ```shell
+    rm -rf dist/*
+    ```
 
-To install the package from TestPyPI or PyPI, execute one of the following commands:
-```python
-# TestPyPI
-pip3 install --index-url https://test.pypi.org/simple/ --no-deps pertdata
+4. Build the package:
+    ```shell
+    python3 -m build
+    ```
 
-# PyPI
-pip3 install pertdata
-```
+5. Upload the package to TestPyPI and PyPI:
+    ```shell
+    # TestPyPI
+    python3 -m twine upload --repository testpypi dist/*
+
+    # PyPI
+    python3 -m twine upload dist/*
+    ```
