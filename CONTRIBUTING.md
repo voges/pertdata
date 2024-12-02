@@ -27,6 +27,7 @@ To install the `pertdata` package for development, follow these steps:
 
 2. Make a tagged commit:
     ```shell
+    git add pyproject.toml
     git commit --message "Your commit message"
     git tag --annotate vMAJOR.MINOR.PATCH --message "vMAJOR.MINOR.PATCH"
     git push origin main --tags
