@@ -4,9 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pertdata"
-dynamic = [
-    "version",
-]
+version = "1.0.2"
 dependencies = [
     "appdirs",
     "numpy==2.0.0",
@@ -24,9 +22,6 @@ license = {file = "LICENSE"}
 
 [project.urls]
 Repository = "https://github.com/voges/pertdata.git"
-
-[tools.setuptools.dynamic]
-version = { attr = "pertdata.__version__" }
 
 [tool.setuptools.package-data]
 "pertdata.resources" = ["*.json"]
