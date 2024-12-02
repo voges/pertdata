@@ -6,7 +6,6 @@ import os
 from typing import Dict
 
 import requests
-import toml
 from appdirs import user_cache_dir
 from tqdm import tqdm
 
@@ -76,13 +75,3 @@ def datasets() -> Dict[str, dict]:
 def cache_dir_path() -> str:
     """Return the path to the cache directory."""
     return user_cache_dir(appname="pertdata", appauthor=False)
-
-
-def get_version() -> str:
-    """Get the version from pyproject.toml."""
-    pyproject_file_path = os.path.join(
-        os.path.dirname(__file__), "..", "..", "pyproject.toml"
-    )
-    with open(file=pyproject_file_path, mode="r") as pyproject_file:
-        pyproject_data = toml.load(pyproject_file)
-        return pyproject_data.get("project", {}).get("version")

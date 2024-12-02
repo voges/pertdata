@@ -18,7 +18,7 @@ To install the `pertdata` package for development, follow these steps:
 
 ## Distribution
 
-1. Update the version in [pyproject.toml](pyproject.toml).
+1. Update the version in [`src/pertdata/__init__.py`](src/pertdata/__init__.py).
     Use [Semantic Versioning](https://semver.org).
     Given a version number MAJOR.MINOR.PATCH, increment the:
     - MAJOR version when you make incompatible API changes,
@@ -27,7 +27,7 @@ To install the `pertdata` package for development, follow these steps:
 
 2. Make a tagged commit:
     ```shell
-    git add pyproject.toml
+    git add src/pertdata/__init__.py
     git commit --message "Your commit message"
     git tag --annotate vMAJOR.MINOR.PATCH --message "vMAJOR.MINOR.PATCH"
     git push origin main --tags
