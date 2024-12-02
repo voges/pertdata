@@ -5,4 +5,4 @@ from .utils import cache_dir_path, datasets
 
 __all__ = ["PertDataset", "datasets"]
 __cache_dir_path__ = cache_dir_path()
-__version__ = "1.0.1"
+__version__ = "1.0.2"
