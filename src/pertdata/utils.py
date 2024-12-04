@@ -6,7 +6,6 @@ import os
 from typing import Dict
 
 import requests
-from appdirs import user_cache_dir
 from tqdm import tqdm
 
 
@@ -70,8 +69,3 @@ def datasets() -> Dict[str, dict]:
             name_without_extension = os.path.splitext(resource)[0]
             datasets[name_without_extension] = metadata
     return datasets
-
-
-def cache_dir_path() -> str:
-    """Return the path to the cache directory."""
-    return user_cache_dir(appname="pertdata", appauthor=False)

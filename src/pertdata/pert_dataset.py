@@ -8,8 +8,9 @@ import zipfile
 import pandas as pd
 import scanpy as sc
 from anndata import AnnData
+from appdirs import user_cache_dir
 
-from pertdata.utils import cache_dir_path, datasets, download_file
+from pertdata.utils import datasets, download_file
 
 
 class PertDataset:
@@ -33,17 +34,24 @@ class PertDataset:
         adata: The actual perturbation data.
     """
 
-    def __init__(self, name: str) -> "PertDataset":
+    def __init__(self, name: str, cache_dir_path: str = None) -> "PertDataset":
         """Initialize the PertDataset object.
 
         Args:
             name: The name of the dataset.
+            cache_dir_path: The path to the cache directory. If None, the user
+                cache directory as chosen by the appdirs package is used.
 
         Returns:
             A PertDataset object.
         """
         self.name = name
-        self.path = os.path.join(cache_dir_path(), name)
+        self.cache_dir_path = (
+            os.path.abspath(path=cache_dir_path)
+            if cache_dir_path is not None
+            else user_cache_dir(appname="pertdata", appauthor=False)
+        )
+        self.path = os.path.join(self.cache_dir_path, name)
         self.adata = self._load()
 
     def __str__(self) -> str:
@@ -51,6 +59,7 @@ class PertDataset:
         return (
             f"PertDataset object\n"
             f"    name: {self.name}\n"
+            f"    cache_dir_path: {self.cache_dir_path}\n"
             f"    path: {self.path}\n"
             f"    adata: AnnData object with n_obs ✕ n_vars "
             f"= {self.adata.shape[0]} ✕ {self.adata.shape[1]}"
@@ -80,28 +89,27 @@ class PertDataset:
             repository = metadata.get("repository")
             url = metadata.get("url")
 
-            # Set dataset path and H5AD file path from metadata.
-            dataset_path = os.path.join(cache_dir_path(), name)
-            h5ad_file_path = os.path.join(dataset_path, "adata.h5ad")
+            # Set H5AD file path.
+            h5ad_file_path = os.path.join(self.path, "adata.h5ad")
 
             # Download the dataset if it is not already cached.
-            if not os.path.exists(path=dataset_path):
+            if not os.path.exists(path=self.path):
                 if repository == "GEARS":
                     h5ad_file_path = os.path.join(
-                        dataset_path, name, "perturb_processed.h5ad"
+                        self.path, name, "perturb_processed.h5ad"
                     )
-                    os.makedirs(name=dataset_path, exist_ok=True)
-                    zip_file_path = os.path.join(dataset_path, "data.zip")
+                    os.makedirs(name=self.path, exist_ok=True)
+                    zip_file_path = os.path.join(self.path, "data.zip")
                     download_file(url=url, path=zip_file_path)
                     with zipfile.ZipFile(file=zip_file_path, mode="r") as zip:
-                        zip.extractall(path=dataset_path)
+                        zip.extractall(path=self.path)
                 elif repository == "SENA" or "scPerturb":
-                    os.makedirs(name=dataset_path, exist_ok=True)
+                    os.makedirs(name=self.path, exist_ok=True)
                     download_file(url=url, path=h5ad_file_path)
                 else:
                     raise ValueError(f"Unsupported repository: {repository}")
             else:
-                print(f"Dataset already cached: {dataset_path}")
+                print(f"Dataset already cached: {self.path}")
 
             # Load the dataset.
             print(f"Loading: {h5ad_file_path}")
