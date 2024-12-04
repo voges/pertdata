@@ -13,12 +13,12 @@ dependencies = [
     "scanpy",
 ]
 authors = [
-    {name = "Jan Voges"},
-    {name = "Guillermo Dufort y Álvarez"},
+    { name = "Jan Voges", email = "jvoges@external.unav.es" },
+    { name = "Guillermo Dufort y Álvarez", email = "gdufortyalv@unav.es" },
 ]
 description = "Functionality for Handling Perturbation Datasets"
 readme = "README.md"
-license = {file = "LICENSE"}
+license = { file = "LICENSE" }
 
 [project.urls]
 Repository = "https://github.com/voges/pertdata.git"
