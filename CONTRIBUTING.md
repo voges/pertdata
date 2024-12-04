@@ -1,8 +1,10 @@
-# Contributing to `pertdata`
+# Contributing
 
 ## Development
 
-To install the `pertdata` package for development, follow these steps:
+This repository provides a [development container](https://code.visualstudio.com/docs/devcontainers/containers) (or devcontainer).
+
+In case you want or need to develop outside of the devcontainer, follow these steps:
 
 1. Create a [virtual environment](https://packaging.python.org/en/latest/tutorials/installing-packages/#creating-and-using-virtual-environments).
 
