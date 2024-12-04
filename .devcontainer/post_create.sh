@@ -7,5 +7,5 @@ sed --in-place '/"\[python\]": {/,/}/d' /home/vscode/.vscode-server/data/Machine
 sudo apt-get update && sudo apt-get install --yes shellcheck
 
 # Install the pertdata package.
-pip3 --disable-pip-version-check install --requirement requirements.txt
-pip3 install --editable .
+pip --disable-pip-version-check install --requirement requirements.txt
+pip install --editable .

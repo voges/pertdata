@@ -8,7 +8,7 @@ To install the `pertdata` package, follow these steps:
 
 2. Install the `pertdata` package:
     ```shell
-    pip3 install pertdata
+    pip install pertdata
     ```
 
 ## Usage

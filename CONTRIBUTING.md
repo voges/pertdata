@@ -8,12 +8,12 @@ To install the `pertdata` package for development, follow these steps:
 
 2. Install the required dependencies:
     ```shell
-    pip3 install --requirement requirements.txt
+    pip install --requirement requirements.txt
     ```
 
 3. Install the `pertdata` package in editable mode:
     ```shell
-    pip3 install --editable .
+    pip install --editable .
     ```
 
 ## Distribution
