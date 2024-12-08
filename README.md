@@ -15,13 +15,6 @@ To install the `pertdata` package, follow these steps:
 
 For usage instructions, please refer to our [tutorial](notebooks/tutorial.ipynb).
 
-## License
-
-This project is licensed under the MIT License.
-See the [LICENSE](LICENSE) file for details.
-
 ## Contact
 
-For support or questions, please contact:
-- [jvoges@external.unav.es](mailto:jvoges@external.unav.es)
-- [gdufortyalv@unav.es](mailto:gdufortyalv@unav.es)
+For support or questions, please use the information provided in [pyproject.toml](pyproject.toml).
