@@ -4,6 +4,7 @@ import importlib.resources as pkg_resources
 import json
 import os
 import zipfile
+import scipy.sparse
 
 import pandas as pd
 import scanpy as sc
@@ -146,8 +147,10 @@ class PertDataset:
         gene_ids = self.adata.var_names.tolist()
 
         # Get the first n_samples from the expression matrix.
-        expression_matrix = self.adata.X[:n_samples, :].todense()
-
+        expression_matrix = self.adata.X[:n_samples, :]
+        if scipy.sparse.issparse(expression_matrix):
+            expression_matrix = expression_matrix.todense()
+            
         # Transpose expression matrix to match the desired output (genes as rows,
         # cells as columns).
         expression_matrix = expression_matrix.T
