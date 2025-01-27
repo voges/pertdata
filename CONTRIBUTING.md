@@ -27,7 +27,7 @@ In case you want or need to develop outside of the devcontainer, follow these st
     - MINOR version when you add functionality in a backward compatible manner,
     - PATCH version when you make backward compatible bug fixes.
 
-3. Make a tagged commit:
+2. Make a tagged commit:
     ```shell
     git add src/pertdata/version.py pyproject.toml
     git commit --message "Your commit message"
