@@ -8,7 +8,8 @@
 				"ms-python.python",
 				"charliermarsh.ruff",
 				"ms-toolsai.jupyter",
-				"mutantdino.resourcemonitor"
+				"mutantdino.resourcemonitor",
+				"ms-toolsai.datawrangler"
 			]
 		}
 	},
