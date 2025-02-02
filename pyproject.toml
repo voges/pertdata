@@ -39,9 +39,6 @@ packages = [
     "src/pertdata",
 ]
 
-[tool.setuptools.package-data]
-"pertdata.resources" = ["*.json"]
-
 [tool.ruff.lint]
 extend-select = [
     # pycodestyle
