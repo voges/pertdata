@@ -20,21 +20,4 @@ The project is configured via [pyproject.toml](pyproject.toml).
     git push origin main --tags
     ```
 
-3. Clean previous builds:
-    ```shell
-    rm -rf dist/*
-    ```
-
-4. Build the package:
-    ```shell
-    hatch build
-    ```
-
-5. Upload the package to TestPyPI and PyPI:
-    ```shell
-    # TestPyPI
-    python3 -m twine upload --repository testpypi dist/*
-
-    # PyPI
-    python3 -m twine upload dist/*
-    ```
+Any tag push will trigger the [publishing workflow](.github/workflows/publish.yml).
