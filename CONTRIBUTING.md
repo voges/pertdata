@@ -10,6 +10,10 @@ The project is configured via [pyproject.toml](pyproject.toml).
 
 ## Distribution
 
+The [publishing workflow](.github/workflows/publish.yml) is triggered by pushing to the `main` branch _and_ pushing a tag that starts with `v`.
+
+For example:
+
 1. Update the version in [`src/pertdata/version.py`](src/pertdata/version.py). Use [Semantic Versioning](https://semver.org).
 
 2. Make a tagged commit:
@@ -19,5 +23,3 @@ The project is configured via [pyproject.toml](pyproject.toml).
     git tag --annotate vMAJOR.MINOR.PATCH --message "vMAJOR.MINOR.PATCH"
     git push origin main --tags
     ```
-
-Any tag push will trigger the [publishing workflow](.github/workflows/publish.yml).
