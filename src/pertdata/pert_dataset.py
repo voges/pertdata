@@ -101,12 +101,12 @@ class PertDataset:
                     )
                     os.makedirs(name=self.path, exist_ok=True)
                     zip_file_path = os.path.join(self.path, "data.zip")
-                    download_file(url=url, path=zip_file_path)
+                    download_file(url=url, file_path=zip_file_path)
                     with zipfile.ZipFile(file=zip_file_path, mode="r") as zip:
                         zip.extractall(path=self.path)
                 elif repository == "SENA" or "scPerturb":
                     os.makedirs(name=self.path, exist_ok=True)
-                    download_file(url=url, path=h5ad_file_path)
+                    download_file(url=url, file_path=h5ad_file_path)
                 else:
                     raise ValueError(f"Unsupported repository: {repository}")
             else:
