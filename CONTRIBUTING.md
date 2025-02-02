@@ -10,7 +10,7 @@ The project is configured via [pyproject.toml](pyproject.toml).
 
 ## Distribution
 
-The [publishing workflow](.github/workflows/publish.yml) is triggered by pushing to the `main` branch _and_ pushing a tag that starts with `v`.
+The [publishing workflow](.github/workflows/publish.yml) is triggered by pushing a tag that starts with `v`.
 
 For example:
 
