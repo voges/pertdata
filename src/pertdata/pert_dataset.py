@@ -95,14 +95,16 @@ class PertDataset:
             url = metadata.get("url")
 
             # Set H5AD file path.
-            h5ad_file_path = os.path.join(self.path, "adata.h5ad")
+            if repository == "GEARS":
+                h5ad_file_path = os.path.join(self.path, name, "perturb_processed.h5ad")
+            elif repository == "SENA" or "scPerturb":
+                h5ad_file_path = os.path.join(self.path, "adata.h5ad")
+            else:
+                raise ValueError(f"Unsupported repository: {repository}")
 
             # Download the dataset if it is not already cached.
             if not os.path.exists(path=self.path):
                 if repository == "GEARS":
-                    h5ad_file_path = os.path.join(
-                        self.path, name, "perturb_processed.h5ad"
-                    )
                     os.makedirs(name=self.path, exist_ok=True)
                     zip_file_path = os.path.join(self.path, "data.zip")
                     download_file(url=url, file_path=zip_file_path, silent=self.silent)
