@@ -11,7 +11,7 @@ import scipy.sparse
 from anndata import AnnData
 from appdirs import user_cache_dir
 
-from pertdata.utils import datasets, download_file
+from pertdata.utils import datasets, download_file, print_message
 
 
 class PertDataset:
@@ -35,13 +35,16 @@ class PertDataset:
         adata: The actual perturbation data.
     """
 
-    def __init__(self, name: str, cache_dir_path: str = None) -> "PertDataset":
+    def __init__(
+        self, name: str, cache_dir_path: str = None, silent: bool = True
+    ) -> "PertDataset":
         """Initialize the PertDataset object.
 
         Args:
             name: The name of the dataset.
             cache_dir_path: The path to the cache directory. If None, the user
                 cache directory as chosen by the appdirs package is used.
+            silent: If True, suppress messages.
 
         Returns:
             A PertDataset object.
@@ -52,6 +55,7 @@ class PertDataset:
             if cache_dir_path is not None
             else user_cache_dir(appname="pertdata", appauthor=False)
         )
+        self.silent = silent
         self.path = os.path.join(self.cache_dir_path, name)
         self.adata = self._load()
 
@@ -75,9 +79,9 @@ class PertDataset:
         # Check if the dataset is supported.
         available_datasets = datasets()
         if f"{self.name}" not in available_datasets.keys():
-            print("Available datasets:")
+            print_message("Available datasets:", silent=self.silent)
             for key in available_datasets.keys():
-                print(f"  {key}")
+                print_message(f"  {key}", silent=self.silent)
             raise ValueError(f"Unsupported dataset: {self.name}")
 
         # Load the dataset.
@@ -101,19 +105,21 @@ class PertDataset:
                     )
                     os.makedirs(name=self.path, exist_ok=True)
                     zip_file_path = os.path.join(self.path, "data.zip")
-                    download_file(url=url, file_path=zip_file_path)
+                    download_file(url=url, file_path=zip_file_path, silent=self.silent)
                     with zipfile.ZipFile(file=zip_file_path, mode="r") as zip:
                         zip.extractall(path=self.path)
                 elif repository == "SENA" or "scPerturb":
                     os.makedirs(name=self.path, exist_ok=True)
-                    download_file(url=url, file_path=h5ad_file_path)
+                    download_file(url=url, file_path=h5ad_file_path, silent=self.silent)
                 else:
                     raise ValueError(f"Unsupported repository: {repository}")
             else:
-                print(f"Dataset already cached: {self.path}")
+                print_message(
+                    f"Dataset already cached: {self.path}", silent=self.silent
+                )
 
             # Load the dataset.
-            print(f"Loading: {h5ad_file_path}")
+            print_message(f"Loading: {h5ad_file_path}", silent=self.silent)
             adata = sc.read_h5ad(filename=h5ad_file_path)
 
             return adata
@@ -136,11 +142,16 @@ class PertDataset:
         n_obs = self.adata.shape[0]
         if n_samples is None:
             n_samples = n_obs
-            print(f"Exporting all {n_obs} samples to: {file_path}")
+            print_message(
+                f"Exporting all {n_obs} samples to: {file_path}", silent=self.silent
+            )
         elif n_samples > n_obs:
             raise ValueError(f"n_samples exceeds available samples. Max is {n_obs}.")
         else:
-            print(f"Exporting the first {n_samples}/{n_obs} samples to: {file_path}")
+            print_message(
+                f"Exporting the first {n_samples}/{n_obs} samples to: {file_path}",
+                silent=self.silent,
+            )
 
         # Extract cell identifiers and gene identifiers.
         cell_ids = self.adata.obs_names[:n_samples].tolist()
