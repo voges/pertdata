@@ -27,17 +27,18 @@ dynamic = ["version"]
 [project.urls]
 Repository = "https://github.com/voges/pertdata.git"
 
-[tool.hatch.version]
-path = "src/pertdata/version.py"
-
 [tool.hatch.build]
 include = [
     "src/pertdata/resources/*.json",
 ]
+
 [tool.hatch.build.targets.wheel]
 packages = [
     "src/pertdata",
 ]
+
+[tool.hatch.version]
+path = "src/pertdata/version.py"
 
 [tool.ruff.lint]
 extend-select = [
