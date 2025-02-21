@@ -13,7 +13,7 @@
 			]
 		}
 	},
-	"runArgs": ["--name", "pertdata"],
+	"runArgs": ["--name", "pertdata_devcontainer"],
 	"postCreateCommand": "bash .devcontainer/post_create.sh",
 	"remoteUser": "vscode"
 }
