@@ -4,9 +4,9 @@
 
 This repository provides a [development container](https://code.visualstudio.com/docs/devcontainers/containers) (or devcontainer).
 
-In the devcontainer, the `pertdata` package is already installed (see [post_create.sh](.devcontainer/post_create.sh)).
+In the devcontainer, the `pertdata` package is already installed (see [`post_create.sh`](.devcontainer/post_create.sh)).
 
-The project is configured via [pyproject.toml](pyproject.toml).
+The project is configured via [`pyproject.toml`](pyproject.toml).
 
 ## Distribution
 
